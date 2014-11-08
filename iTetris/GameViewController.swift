@@ -14,6 +14,7 @@ class GameViewController: UIViewController, ITetrisDelegate, UIGestureRecognizer
     
     var scene: GameScene!
     var iTetris:ITetris!
+    var panPointReference:CGPoint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -41,6 +42,22 @@ class GameViewController: UIViewController, ITetrisDelegate, UIGestureRecognizer
         return true
     }
     
+    @IBAction func didPan(sender: UIPanGestureRecognizer) {
+        let currentPoint = sender.translationInView(self.view)
+        if let originalPoint = panPointReference {
+            if abs(currentPoint.x - originalPoint.x) > (BlockSize * 0.9) {
+                if sender.velocityInView(self.view).x > CGFloat(0) {
+                    iTetris.moveShapeRight()
+                    panPointReference = currentPoint
+                } else {
+                    iTetris.moveShapeLeft()
+                    panPointReference = currentPoint
+                }
+            }
+        } else if sender.state == .Began {
+            panPointReference = currentPoint
+        }
+    }
     
     @IBAction func didTap(sender: UITapGestureRecognizer) {
         iTetris.rotateShape()
